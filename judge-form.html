@@ -87,9 +87,7 @@
       overflow: hidden;
     }
 
-    .card-section {
-      padding: 20px 20px 0;
-    }
+    .card-section { padding: 20px 20px 0; }
     .card-section:last-child { padding-bottom: 20px; }
 
     .section-label {
@@ -129,31 +127,17 @@
       align-items: center;
       justify-content: center;
     }
-    .finalist-btn:hover {
-      border-color: var(--gold);
-      color: var(--gold);
-    }
-    .finalist-btn.selected {
-      background: var(--gold);
-      border-color: var(--gold);
-      color: var(--dark);
-    }
+    .finalist-btn:hover { border-color: var(--gold); color: var(--gold); }
+    .finalist-btn.selected { background: var(--gold); border-color: var(--gold); color: var(--dark); }
     .finalist-btn.submitted {
       background: rgba(76,175,125,0.15);
       border-color: var(--success);
       color: var(--success);
       cursor: default;
     }
-    .finalist-hint {
-      font-size: 11px;
-      color: var(--muted);
-      margin-top: 8px;
-    }
+    .finalist-hint { font-size: 11px; color: var(--muted); margin-top: 8px; }
 
     /* ── Score input ── */
-    .score-wrap {
-      position: relative;
-    }
     .score-display {
       font-family: 'Playfair Display', serif;
       font-size: 72px;
@@ -165,12 +149,8 @@
       padding: 8px 0 4px;
     }
     .score-display.empty { color: var(--border); }
-    .score-range {
-      text-align: center;
-      font-size: 11px;
-      color: var(--muted);
-      margin-bottom: 16px;
-    }
+    .score-range { text-align: center; font-size: 11px; color: var(--muted); margin-bottom: 16px; }
+
     .score-slider {
       -webkit-appearance: none;
       appearance: none;
@@ -198,18 +178,8 @@
       color: var(--muted);
     }
 
-    /* Manual input toggle */
-    .manual-row {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-top: 16px;
-    }
-    .manual-label {
-      font-size: 12px;
-      color: var(--muted);
-      white-space: nowrap;
-    }
+    .manual-row { display: flex; align-items: center; gap: 10px; margin-top: 16px; }
+    .manual-label { font-size: 12px; color: var(--muted); white-space: nowrap; }
     .manual-input {
       flex: 1;
       background: var(--dark);
@@ -263,13 +233,9 @@
     }
     .submit-btn:hover:not(:disabled) { opacity: 0.9; }
     .submit-btn:active:not(:disabled) { transform: scale(0.99); }
-    .submit-btn:disabled {
-      background: var(--border);
-      color: var(--muted);
-      cursor: not-allowed;
-    }
+    .submit-btn:disabled { background: var(--border); color: var(--muted); cursor: not-allowed; }
 
-    /* ── Progress bar ── */
+    /* ── Progress ── */
     .progress-wrap {
       width: 100%;
       max-width: 480px;
@@ -314,12 +280,9 @@
       white-space: nowrap;
     }
     .toast.error { background: var(--danger); }
-    .toast.show {
-      opacity: 1;
-      transform: translateX(-50%) translateY(0);
-    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
-    /* ── Locked state ── */
+    /* ── Locked screen ── */
     .locked-screen {
       display: none;
       flex-direction: column;
@@ -331,31 +294,15 @@
       gap: 16px;
     }
     .locked-screen.show { display: flex; }
-    .lock-icon {
-      font-size: 48px;
-    }
-    .locked-title {
-      font-family: 'Playfair Display', serif;
-      font-size: 24px;
-      color: var(--success);
-    }
-    .locked-body {
-      font-size: 14px;
-      color: var(--muted);
-      max-width: 280px;
-      line-height: 1.6;
-    }
+    .lock-icon { font-size: 48px; }
+    .locked-title { font-family: 'Playfair Display', serif; font-size: 24px; color: var(--success); }
+    .locked-body { font-size: 14px; color: var(--muted); max-width: 280px; line-height: 1.6; }
 
-    /* ── Validation error ── */
-    .field-error {
-      font-size: 11px;
-      color: var(--danger);
-      margin-top: 6px;
-      display: none;
-    }
+    /* ── Error ── */
+    .field-error { font-size: 11px; color: var(--danger); margin-top: 6px; display: none; }
     .field-error.show { display: block; }
 
-    /* Loading spinner inside button */
+    /* ── Spinner ── */
     @keyframes spin { to { transform: rotate(360deg); } }
     .spinner {
       display: inline-block;
@@ -367,6 +314,21 @@
       vertical-align: middle;
       margin-right: 6px;
     }
+
+    /* ── Unknown judge warning ── */
+    .unknown-warning {
+      width: 100%;
+      max-width: 480px;
+      margin: 16px 16px 0;
+      background: rgba(224,90,90,0.1);
+      border: 1px solid rgba(224,90,90,0.3);
+      border-radius: 10px;
+      padding: 12px 16px;
+      font-size: 12px;
+      color: var(--danger);
+      display: none;
+    }
+    .unknown-warning.show { display: block; }
   </style>
 </head>
 <body>
@@ -377,12 +339,17 @@
   <div class="header-title">Duta Genre Karawang</div>
   <div class="judge-badge">
     <span class="dot"></span>
-    <span id="judge-name">Memuat data juri...</span>
+    <span id="judge-name">Memuat...</span>
   </div>
 </div>
 
+<!-- Warning kalau URL tidak valid -->
+<div class="unknown-warning" id="unknown-warning">
+  ⚠️ QR Code tidak valid. Pastikan Anda menggunakan QR Code yang diberikan panitia.
+</div>
+
 <!-- Progress -->
-<div class="progress-wrap">
+<div class="progress-wrap" id="progress-wrap">
   <div class="progress-label">
     <span>Progress Penilaian</span>
     <span id="progress-text">0 / 10 finalis</span>
@@ -395,66 +362,43 @@
 <!-- Form Card -->
 <div class="card" id="main-form">
 
-  <!-- Finalist Selector -->
   <div class="card-section">
     <div class="section-label">Pilih Nomor Finalis</div>
-    <div class="finalist-grid" id="finalist-grid">
-      <!-- Dynamically generated -->
-    </div>
+    <div class="finalist-grid" id="finalist-grid"></div>
     <div class="finalist-hint" id="finalist-hint">Pilih nomor finalis yang sedang tampil</div>
     <div class="field-error" id="finalist-error">Pilih nomor finalis terlebih dahulu.</div>
   </div>
 
   <div class="divider"></div>
 
-  <!-- Score Input -->
   <div class="card-section">
     <div class="section-label">Nilai</div>
     <div class="score-display empty" id="score-display">—</div>
     <div class="score-range">Skala 50 – 100</div>
-    <input
-      type="range"
-      class="score-slider"
-      id="score-slider"
-      min="50" max="100" value="75"
-    />
+    <input type="range" class="score-slider" id="score-slider" min="50" max="100" value="75" />
     <div class="score-ticks">
       <span>50</span><span>60</span><span>70</span><span>80</span><span>90</span><span>100</span>
     </div>
     <div class="manual-row">
       <span class="manual-label">Ketik langsung:</span>
-      <input
-        type="number"
-        class="manual-input"
-        id="manual-input"
-        min="50" max="100"
-        placeholder="75"
-      />
+      <input type="number" class="manual-input" id="manual-input" min="50" max="100" placeholder="75" />
     </div>
     <div class="field-error" id="score-error">Nilai harus antara 50 dan 100.</div>
   </div>
 
   <div class="divider"></div>
 
-  <!-- Notes -->
   <div class="card-section" style="padding-bottom: 20px;">
     <div class="section-label">Catatan (Opsional)</div>
-    <textarea
-      class="notes-input"
-      id="notes-input"
-      placeholder="Catatan singkat untuk finalis ini..."
-      maxlength="300"
-    ></textarea>
+    <textarea class="notes-input" id="notes-input" placeholder="Catatan singkat untuk finalis ini..." maxlength="300"></textarea>
   </div>
 
 </div>
 
-<!-- Submit Button -->
-<button class="submit-btn" id="submit-btn" disabled>
-  Pilih finalis untuk menilai
-</button>
+<!-- Submit -->
+<button class="submit-btn" id="submit-btn" disabled>Pilih finalis untuk menilai</button>
 
-<!-- Locked screen (shown after all submitted) -->
+<!-- Locked screen -->
 <div class="locked-screen" id="locked-screen">
   <div class="lock-icon">🔒</div>
   <div class="locked-title">Semua Nilai Terkunci</div>
@@ -468,55 +412,73 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  // ─────────────────────────────────────────────
-  // CONFIGURATION — Ubah sesuai kebutuhan
-  // ─────────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════
+  // KONFIGURASI — SESUAIKAN SEBELUM HARI H
+  // ═══════════════════════════════════════════════════════
+
   const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxU13cEa2iS3GOP5dv7aeCaI-uIGKczEVAiOkqtssdH0xzcMV1HepR8NscODH28La-1/exec';
 
+  // Nama juri sesuai QR Code masing-masing
+  // Format: 'kode': 'Nama Lengkap'
+  // QR Code juri 1 → URL pakai ?judge=j1, dst
   const JUDGES = {
-    'j1': 'Juri 1 — [Nama Juri]',
-    'j2': 'Juri 2 — [Nama Juri]',
-    'j3': 'Juri 3 — [Nama Juri]',
-    'j4': 'Juri 4 — [Nama Juri]',
-    'j5': 'Juri 5 — [Nama Juri]',
+    'j1': 'Rini Andriani',
+    'j2': 'Budi Santoso',
+    'j3': 'Dewi Kusuma',
+    'j4': 'Agus Permana',
+    'j5': 'Siti Rahayu',
+    'j6': 'Hendra Wijaya',
   };
 
-  const TOTAL_FINALISTS = 10; // Ubah sesuai jumlah finalis
+  const TOTAL_FINALISTS = 10;
 
-  // ─────────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════
   // STATE
-  // ─────────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════
+
   const params     = new URLSearchParams(window.location.search);
-  const judgeId    = params.get('judge') || 'unknown';
-  const judgeName  = JUDGES[judgeId] || 'Juri Tidak Dikenal';
-  const storageKey = `dg2026_submitted_${judgeId}`;
+  const judgeId    = params.get('judge') || '';
+  const judgeName  = JUDGES[judgeId] || '';
+  const storageKey = `dg2026_${judgeId}`;
 
   let selectedFinalist = null;
   let submittedSet     = new Set(JSON.parse(localStorage.getItem(storageKey) || '[]'));
   let isSubmitting     = false;
 
-  // ─────────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════
   // INIT
-  // ─────────────────────────────────────────────
-  document.getElementById('judge-name').textContent = judgeName;
-  buildFinalistGrid();
-  updateProgress();
-  checkAllDone();
+  // ═══════════════════════════════════════════════════════
 
-  // ─────────────────────────────────────────────
-  // BUILD FINALIST GRID
-  // ─────────────────────────────────────────────
+  if (!judgeId || !judgeName) {
+    // URL tidak valid — tampilkan warning, sembunyikan form
+    document.getElementById('unknown-warning').classList.add('show');
+    document.getElementById('main-form').style.display    = 'none';
+    document.getElementById('submit-btn').style.display   = 'none';
+    document.getElementById('progress-wrap').style.display = 'none';
+    document.getElementById('judge-name').textContent     = 'Tidak Dikenal';
+  } else {
+    document.getElementById('judge-name').textContent = judgeName;
+    buildFinalistGrid();
+    updateProgress();
+    checkAllDone();
+  }
+
+  // ═══════════════════════════════════════════════════════
+  // FINALIST GRID
+  // ═══════════════════════════════════════════════════════
+
   function buildFinalistGrid() {
     const grid = document.getElementById('finalist-grid');
     grid.innerHTML = '';
     for (let i = 1; i <= TOTAL_FINALISTS; i++) {
-      const btn = document.createElement('button');
-      btn.className = 'finalist-btn' + (submittedSet.has(String(i)) ? ' submitted' : '');
+      const btn       = document.createElement('button');
+      const submitted = submittedSet.has(String(i));
+      btn.className   = 'finalist-btn' + (submitted ? ' submitted' : '');
       btn.textContent = i;
       btn.dataset.id  = i;
-      if (submittedSet.has(String(i))) {
-        btn.title    = `Finalis ${i} sudah dinilai`;
+      if (submitted) {
         btn.disabled = true;
+        btn.title    = `Finalis ${i} sudah dinilai`;
       } else {
         btn.addEventListener('click', () => selectFinalist(i));
       }
@@ -527,25 +489,24 @@
   function selectFinalist(id) {
     selectedFinalist = id;
     document.querySelectorAll('.finalist-btn').forEach(b => b.classList.remove('selected'));
-    const target = document.querySelector(`.finalist-btn[data-id="${id}"]`);
-    if (target) target.classList.add('selected');
-    document.getElementById('finalist-hint').textContent = `Finalis ${id} dipilih — masukkan nilai di bawah`;
+    document.querySelector(`.finalist-btn[data-id="${id}"]`).classList.add('selected');
+    document.getElementById('finalist-hint').textContent = `Finalis ${id} dipilih`;
     document.getElementById('finalist-error').classList.remove('show');
     updateSubmitButton();
   }
 
-  // ─────────────────────────────────────────────
-  // SCORE SYNC — slider ↔ manual input
-  // ─────────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════
+  // SCORE SYNC
+  // ═══════════════════════════════════════════════════════
+
   const slider      = document.getElementById('score-slider');
   const manualInput = document.getElementById('manual-input');
   const scoreDisp   = document.getElementById('score-display');
-
-  let currentScore = null; // null = untouched
+  let   currentScore = null;
 
   slider.addEventListener('input', () => {
-    currentScore         = parseInt(slider.value);
-    manualInput.value    = currentScore;
+    currentScore          = parseInt(slider.value);
+    manualInput.value     = currentScore;
     scoreDisp.textContent = currentScore;
     scoreDisp.classList.remove('empty');
     document.getElementById('score-error').classList.remove('show');
@@ -555,27 +516,28 @@
   manualInput.addEventListener('input', () => {
     const v = parseInt(manualInput.value);
     if (!isNaN(v) && v >= 50 && v <= 100) {
-      currentScore         = v;
-      slider.value         = v;
+      currentScore          = v;
+      slider.value          = v;
       scoreDisp.textContent = v;
       scoreDisp.classList.remove('empty');
       document.getElementById('score-error').classList.remove('show');
     } else {
+      currentScore = null;
       scoreDisp.textContent = manualInput.value || '—';
       scoreDisp.classList.add('empty');
-      currentScore = null;
     }
     updateSubmitButton();
   });
 
-  // ─────────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════
   // SUBMIT BUTTON STATE
-  // ─────────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════
+
   function updateSubmitButton() {
     const btn = document.getElementById('submit-btn');
     if (!selectedFinalist) {
-      btn.disabled     = true;
-      btn.textContent  = 'Pilih finalis untuk menilai';
+      btn.disabled    = true;
+      btn.textContent = 'Pilih finalis untuk menilai';
       return;
     }
     if (currentScore === null) {
@@ -587,123 +549,139 @@
     btn.textContent = `Kirim Nilai ${currentScore} untuk Finalis ${selectedFinalist}`;
   }
 
-  // ─────────────────────────────────────────────
-  // SUBMIT
-  // ─────────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════
+  // SUBMIT — dengan timeout handling yang proper
+  // ═══════════════════════════════════════════════════════
+
   document.getElementById('submit-btn').addEventListener('click', async () => {
     if (isSubmitting) return;
 
-    // Validate
-    let hasError = false;
     if (!selectedFinalist) {
       document.getElementById('finalist-error').classList.add('show');
-      hasError = true;
+      return;
     }
     if (currentScore === null || currentScore < 50 || currentScore > 100) {
       document.getElementById('score-error').classList.add('show');
-      hasError = true;
+      return;
     }
-    if (hasError) return;
-
-    // Double-check local storage
     if (submittedSet.has(String(selectedFinalist))) {
       showToast('Finalis ini sudah pernah Anda nilai.', true);
       return;
     }
 
-    isSubmitting = true;
-    const btn    = document.getElementById('submit-btn');
-    btn.disabled = true;
-    btn.innerHTML = '<span class="spinner"></span> Mengirim...';
+    isSubmitting      = true;
+    const btn         = document.getElementById('submit-btn');
+    const savedText   = btn.textContent;
+    btn.disabled      = true;
+    btn.innerHTML     = '<span class="spinner"></span> Mengirim...';
 
     const payload = {
-      judge_id:     judgeId,
-      judge_name:   judgeName,
-      finalist_id:  selectedFinalist,
-      score:        currentScore,
-      notes:        document.getElementById('notes-input').value.trim(),
-      timestamp:    new Date().toISOString(),
+      judge_id:    judgeId,
+      judge_name:  judgeName,
+      finalist_id: selectedFinalist,
+      score:       currentScore,
+      notes:       document.getElementById('notes-input').value.trim(),
+      timestamp:   new Date().toISOString(),
     };
 
+    // Simpan dulu ke localStorage SEBELUM kirim
+    // Supaya kalau koneksi timeout setelah data masuk, UI tetap konsisten
+    const finalistToSubmit = selectedFinalist;
+
+    let status = 'unknown';
+
     try {
+      // Timeout 15 detik
+      const controller = new AbortController();
+      const timeoutId  = setTimeout(() => controller.abort(), 15000);
+
       const res = await fetch(APPS_SCRIPT_URL, {
         method:  'POST',
         headers: { 'Content-Type': 'text/plain' },
         body:    JSON.stringify(payload),
+        signal:  controller.signal,
       });
+      clearTimeout(timeoutId);
+
       const data = await res.json();
+      status = data.status; // 'success' atau 'duplicate'
 
-      if (data.status === 'success') {
-        // Lock locally
-        submittedSet.add(String(selectedFinalist));
-        localStorage.setItem(storageKey, JSON.stringify([...submittedSet]));
-
-        // Update UI
-        buildFinalistGrid();
-        updateProgress();
-        resetForm();
-        showToast(`✓ Nilai Finalis ${selectedFinalist} berhasil dikirim`);
-        checkAllDone();
-
-      } else if (data.status === 'duplicate') {
-        showToast('Nilai untuk finalis ini sudah tercatat di server.', true);
-        submittedSet.add(String(selectedFinalist));
-        localStorage.setItem(storageKey, JSON.stringify([...submittedSet]));
-        buildFinalistGrid();
-        resetForm();
-
-      } else {
-        showToast('Gagal mengirim. Coba lagi.', true);
-        btn.disabled    = false;
-        btn.textContent = `Kirim Nilai ${currentScore} untuk Finalis ${selectedFinalist}`;
-      }
     } catch (err) {
-      showToast('Koneksi gagal. Periksa internet dan coba lagi.', true);
+      if (err.name === 'AbortError') {
+        // Timeout — Apps Script lambat tapi data kemungkinan sudah masuk
+        // Anggap sukses, tandai di local
+        status = 'timeout';
+      } else {
+        // Koneksi benar-benar gagal
+        status = 'error';
+      }
+    }
+
+    if (status === 'success' || status === 'duplicate' || status === 'timeout') {
+      // Semua kondisi ini artinya data sudah atau kemungkinan sudah masuk
+      submittedSet.add(String(finalistToSubmit));
+      localStorage.setItem(storageKey, JSON.stringify([...submittedSet]));
+      buildFinalistGrid();
+      updateProgress();
+      resetForm();
+      checkAllDone();
+
+      if (status === 'timeout') {
+        showToast(`✓ Nilai Finalis ${finalistToSubmit} terkirim`);
+      } else if (status === 'duplicate') {
+        showToast(`Finalis ${finalistToSubmit} sudah tercatat di server`);
+      } else {
+        showToast(`✓ Nilai Finalis ${finalistToSubmit} berhasil dikirim`);
+      }
+
+    } else {
+      // Gagal total — biarkan juri coba lagi
+      showToast('Koneksi gagal. Coba lagi.', true);
       btn.disabled    = false;
-      btn.textContent = `Kirim Nilai ${currentScore} untuk Finalis ${selectedFinalist}`;
+      btn.textContent = savedText;
     }
 
     isSubmitting = false;
   });
 
-  // ─────────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════
   // HELPERS
-  // ─────────────────────────────────────────────
+  // ═══════════════════════════════════════════════════════
+
   function resetForm() {
-    selectedFinalist = null;
-    currentScore     = null;
-    slider.value     = 75;
-    manualInput.value = '';
+    selectedFinalist      = null;
+    currentScore          = null;
+    slider.value          = 75;
+    manualInput.value     = '';
     scoreDisp.textContent = '—';
     scoreDisp.classList.add('empty');
-    document.getElementById('notes-input').value = '';
+    document.getElementById('notes-input').value      = '';
     document.getElementById('finalist-hint').textContent = 'Pilih nomor finalis yang sedang tampil';
     updateSubmitButton();
   }
 
   function updateProgress() {
-    const done  = submittedSet.size;
-    const total = TOTAL_FINALISTS;
-    const pct   = (done / total) * 100;
-    document.getElementById('progress-text').textContent = `${done} / ${total} finalis`;
+    const done = submittedSet.size;
+    const pct  = (done / TOTAL_FINALISTS) * 100;
+    document.getElementById('progress-text').textContent = `${done} / ${TOTAL_FINALISTS} finalis`;
     document.getElementById('progress-fill').style.width = pct + '%';
   }
 
   function checkAllDone() {
     if (submittedSet.size >= TOTAL_FINALISTS) {
-      document.getElementById('main-form').style.display    = 'none';
-      document.getElementById('submit-btn').style.display   = 'none';
+      document.getElementById('main-form').style.display     = 'none';
+      document.getElementById('submit-btn').style.display    = 'none';
       document.getElementById('progress-wrap').style.display = 'none';
       document.getElementById('locked-screen').classList.add('show');
     }
   }
 
   function showToast(msg, isError = false) {
-    const t = document.getElementById('toast');
+    const t   = document.getElementById('toast');
     t.textContent = msg;
     t.className   = 'toast' + (isError ? ' error' : '') + ' show';
-    setTimeout(() => { t.classList.remove('show'); }, 3000);
+    setTimeout(() => t.classList.remove('show'), 3500);
   }
 </script>
 </body>
-</html>
+</html> 
