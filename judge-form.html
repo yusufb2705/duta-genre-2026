@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Penilaian Juri — Duta Genre Karawang 2026</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap');
+
+    :root {
+      --gold:    #C9A84C;
+      --gold-lt: #F0DFA0;
+      --dark:    #0E0E0E;
+      --surface: #1A1A1A;
+      --border:  #2E2E2E;
+      --text:    #F0EDE6;
+      --muted:   #888;
+      --danger:  #E05A5A;
+      --success: #4CAF7D;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--dark);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 0 0 48px;
+    }
+
+    /* ── Header ── */
+    .header {
+      width: 100%;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 20px 24px 16px;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .header-eyebrow {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.18em;
+      color: var(--gold);
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+    .header-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      color: var(--text);
+      line-height: 1.2;
+    }
+    .judge-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-top: 10px;
+      background: rgba(201,168,76,0.12);
+      border: 1px solid rgba(201,168,76,0.3);
+      border-radius: 100px;
+      padding: 4px 12px;
+      font-size: 12px;
+      color: var(--gold-lt);
+      font-weight: 500;
+    }
+    .judge-badge .dot {
+      width: 6px; height: 6px;
+      background: var(--gold);
+      border-radius: 50%;
+    }
+
+    /* ── Main card ── */
+    .card {
+      width: 100%;
+      max-width: 480px;
+      margin: 24px 16px 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      overflow: hidden;
+    }
+
+    .card-section {
+      padding: 20px 20px 0;
+    }
+    .card-section:last-child { padding-bottom: 20px; }
+
+    .section-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+    }
+
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin: 20px 0 0;
+    }
+
+    /* ── Finalist selector ── */
+    .finalist-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+    .finalist-btn {
+      aspect-ratio: 1;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      background: transparent;
+      color: var(--muted);
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .finalist-btn:hover {
+      border-color: var(--gold);
+      color: var(--gold);
+    }
+    .finalist-btn.selected {
+      background: var(--gold);
+      border-color: var(--gold);
+      color: var(--dark);
+    }
+    .finalist-btn.submitted {
+      background: rgba(76,175,125,0.15);
+      border-color: var(--success);
+      color: var(--success);
+      cursor: default;
+    }
+    .finalist-hint {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 8px;
+    }
+
+    /* ── Score input ── */
+    .score-wrap {
+      position: relative;
+    }
+    .score-display {
+      font-family: 'Playfair Display', serif;
+      font-size: 72px;
+      font-weight: 700;
+      color: var(--gold);
+      text-align: center;
+      line-height: 1;
+      letter-spacing: -2px;
+      padding: 8px 0 4px;
+    }
+    .score-display.empty { color: var(--border); }
+    .score-range {
+      text-align: center;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 16px;
+    }
+    .score-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--border);
+      outline: none;
+      cursor: pointer;
+    }
+    .score-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: var(--gold);
+      cursor: pointer;
+      box-shadow: 0 0 0 4px rgba(201,168,76,0.2);
+    }
+    .score-ticks {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 10px;
+      color: var(--muted);
+    }
+
+    /* Manual input toggle */
+    .manual-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 16px;
+    }
+    .manual-label {
+      font-size: 12px;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+    .manual-input {
+      flex: 1;
+      background: var(--dark);
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 16px;
+      font-weight: 600;
+      padding: 8px 12px;
+      text-align: center;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    .manual-input:focus { border-color: var(--gold); }
+
+    /* ── Notes ── */
+    .notes-input {
+      width: 100%;
+      background: var(--dark);
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      padding: 12px;
+      resize: none;
+      outline: none;
+      transition: border-color 0.15s;
+      min-height: 80px;
+    }
+    .notes-input:focus { border-color: var(--gold); }
+    .notes-input::placeholder { color: var(--muted); }
+
+    /* ── Submit ── */
+    .submit-btn {
+      width: 100%;
+      max-width: 480px;
+      margin: 16px 16px 0;
+      padding: 16px;
+      background: var(--gold);
+      color: var(--dark);
+      border: none;
+      border-radius: 12px;
+      font-family: 'Inter', sans-serif;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      cursor: pointer;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .submit-btn:hover:not(:disabled) { opacity: 0.9; }
+    .submit-btn:active:not(:disabled) { transform: scale(0.99); }
+    .submit-btn:disabled {
+      background: var(--border);
+      color: var(--muted);
+      cursor: not-allowed;
+    }
+
+    /* ── Progress bar ── */
+    .progress-wrap {
+      width: 100%;
+      max-width: 480px;
+      margin: 20px 16px 0;
+      padding: 0 4px;
+    }
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .progress-track {
+      height: 4px;
+      background: var(--border);
+      border-radius: 2px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--gold);
+      border-radius: 2px;
+      transition: width 0.4s ease;
+    }
+
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--success);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 10px 20px;
+      border-radius: 100px;
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 100;
+      white-space: nowrap;
+    }
+    .toast.error { background: var(--danger); }
+    .toast.show {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    /* ── Locked state ── */
+    .locked-screen {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 60vh;
+      text-align: center;
+      padding: 32px 24px;
+      gap: 16px;
+    }
+    .locked-screen.show { display: flex; }
+    .lock-icon {
+      font-size: 48px;
+    }
+    .locked-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 24px;
+      color: var(--success);
+    }
+    .locked-body {
+      font-size: 14px;
+      color: var(--muted);
+      max-width: 280px;
+      line-height: 1.6;
+    }
+
+    /* ── Validation error ── */
+    .field-error {
+      font-size: 11px;
+      color: var(--danger);
+      margin-top: 6px;
+      display: none;
+    }
+    .field-error.show { display: block; }
+
+    /* Loading spinner inside button */
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .spinner {
+      display: inline-block;
+      width: 14px; height: 14px;
+      border: 2px solid rgba(0,0,0,0.3);
+      border-top-color: var(--dark);
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      vertical-align: middle;
+      margin-right: 6px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <div class="header-eyebrow">Grand Final 2026</div>
+  <div class="header-title">Duta Genre Karawang</div>
+  <div class="judge-badge">
+    <span class="dot"></span>
+    <span id="judge-name">Memuat data juri...</span>
+  </div>
+</div>
+
+<!-- Progress -->
+<div class="progress-wrap">
+  <div class="progress-label">
+    <span>Progress Penilaian</span>
+    <span id="progress-text">0 / 10 finalis</span>
+  </div>
+  <div class="progress-track">
+    <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+  </div>
+</div>
+
+<!-- Form Card -->
+<div class="card" id="main-form">
+
+  <!-- Finalist Selector -->
+  <div class="card-section">
+    <div class="section-label">Pilih Nomor Finalis</div>
+    <div class="finalist-grid" id="finalist-grid">
+      <!-- Dynamically generated -->
+    </div>
+    <div class="finalist-hint" id="finalist-hint">Pilih nomor finalis yang sedang tampil</div>
+    <div class="field-error" id="finalist-error">Pilih nomor finalis terlebih dahulu.</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Score Input -->
+  <div class="card-section">
+    <div class="section-label">Nilai</div>
+    <div class="score-display empty" id="score-display">—</div>
+    <div class="score-range">Skala 50 – 100</div>
+    <input
+      type="range"
+      class="score-slider"
+      id="score-slider"
+      min="50" max="100" value="75"
+    />
+    <div class="score-ticks">
+      <span>50</span><span>60</span><span>70</span><span>80</span><span>90</span><span>100</span>
+    </div>
+    <div class="manual-row">
+      <span class="manual-label">Ketik langsung:</span>
+      <input
+        type="number"
+        class="manual-input"
+        id="manual-input"
+        min="50" max="100"
+        placeholder="75"
+      />
+    </div>
+    <div class="field-error" id="score-error">Nilai harus antara 50 dan 100.</div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Notes -->
+  <div class="card-section" style="padding-bottom: 20px;">
+    <div class="section-label">Catatan (Opsional)</div>
+    <textarea
+      class="notes-input"
+      id="notes-input"
+      placeholder="Catatan singkat untuk finalis ini..."
+      maxlength="300"
+    ></textarea>
+  </div>
+
+</div>
+
+<!-- Submit Button -->
+<button class="submit-btn" id="submit-btn" disabled>
+  Pilih finalis untuk menilai
+</button>
+
+<!-- Locked screen (shown after all submitted) -->
+<div class="locked-screen" id="locked-screen">
+  <div class="lock-icon">🔒</div>
+  <div class="locked-title">Semua Nilai Terkunci</div>
+  <div class="locked-body">
+    Seluruh penilaian Anda telah berhasil dikirim dan dikunci oleh sistem.<br><br>
+    Terima kasih atas kontribusi Anda sebagai juri.
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+  // ─────────────────────────────────────────────
+  // CONFIGURATION — Ubah sesuai kebutuhan
+  // ─────────────────────────────────────────────
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxU13cEa2iS3GOP5dv7aeCaI-uIGKczEVAiOkqtssdH0xzcMV1HepR8NscODH28La-1/exec';
+
+  const JUDGES = {
+    'j1': 'Juri 1 — [Nama Juri]',
+    'j2': 'Juri 2 — [Nama Juri]',
+    'j3': 'Juri 3 — [Nama Juri]',
+    'j4': 'Juri 4 — [Nama Juri]',
+    'j5': 'Juri 5 — [Nama Juri]',
+  };
+
+  const TOTAL_FINALISTS = 10; // Ubah sesuai jumlah finalis
+
+  // ─────────────────────────────────────────────
+  // STATE
+  // ─────────────────────────────────────────────
+  const params     = new URLSearchParams(window.location.search);
+  const judgeId    = params.get('judge') || 'unknown';
+  const judgeName  = JUDGES[judgeId] || 'Juri Tidak Dikenal';
+  const storageKey = `dg2026_submitted_${judgeId}`;
+
+  let selectedFinalist = null;
+  let submittedSet     = new Set(JSON.parse(localStorage.getItem(storageKey) || '[]'));
+  let isSubmitting     = false;
+
+  // ─────────────────────────────────────────────
+  // INIT
+  // ─────────────────────────────────────────────
+  document.getElementById('judge-name').textContent = judgeName;
+  buildFinalistGrid();
+  updateProgress();
+  checkAllDone();
+
+  // ─────────────────────────────────────────────
+  // BUILD FINALIST GRID
+  // ─────────────────────────────────────────────
+  function buildFinalistGrid() {
+    const grid = document.getElementById('finalist-grid');
+    grid.innerHTML = '';
+    for (let i = 1; i <= TOTAL_FINALISTS; i++) {
+      const btn = document.createElement('button');
+      btn.className = 'finalist-btn' + (submittedSet.has(String(i)) ? ' submitted' : '');
+      btn.textContent = i;
+      btn.dataset.id  = i;
+      if (submittedSet.has(String(i))) {
+        btn.title    = `Finalis ${i} sudah dinilai`;
+        btn.disabled = true;
+      } else {
+        btn.addEventListener('click', () => selectFinalist(i));
+      }
+      grid.appendChild(btn);
+    }
+  }
+
+  function selectFinalist(id) {
+    selectedFinalist = id;
+    document.querySelectorAll('.finalist-btn').forEach(b => b.classList.remove('selected'));
+    const target = document.querySelector(`.finalist-btn[data-id="${id}"]`);
+    if (target) target.classList.add('selected');
+    document.getElementById('finalist-hint').textContent = `Finalis ${id} dipilih — masukkan nilai di bawah`;
+    document.getElementById('finalist-error').classList.remove('show');
+    updateSubmitButton();
+  }
+
+  // ─────────────────────────────────────────────
+  // SCORE SYNC — slider ↔ manual input
+  // ─────────────────────────────────────────────
+  const slider      = document.getElementById('score-slider');
+  const manualInput = document.getElementById('manual-input');
+  const scoreDisp   = document.getElementById('score-display');
+
+  let currentScore = null; // null = untouched
+
+  slider.addEventListener('input', () => {
+    currentScore         = parseInt(slider.value);
+    manualInput.value    = currentScore;
+    scoreDisp.textContent = currentScore;
+    scoreDisp.classList.remove('empty');
+    document.getElementById('score-error').classList.remove('show');
+    updateSubmitButton();
+  });
+
+  manualInput.addEventListener('input', () => {
+    const v = parseInt(manualInput.value);
+    if (!isNaN(v) && v >= 50 && v <= 100) {
+      currentScore         = v;
+      slider.value         = v;
+      scoreDisp.textContent = v;
+      scoreDisp.classList.remove('empty');
+      document.getElementById('score-error').classList.remove('show');
+    } else {
+      scoreDisp.textContent = manualInput.value || '—';
+      scoreDisp.classList.add('empty');
+      currentScore = null;
+    }
+    updateSubmitButton();
+  });
+
+  // ─────────────────────────────────────────────
+  // SUBMIT BUTTON STATE
+  // ─────────────────────────────────────────────
+  function updateSubmitButton() {
+    const btn = document.getElementById('submit-btn');
+    if (!selectedFinalist) {
+      btn.disabled     = true;
+      btn.textContent  = 'Pilih finalis untuk menilai';
+      return;
+    }
+    if (currentScore === null) {
+      btn.disabled    = true;
+      btn.textContent = 'Geser slider untuk memberi nilai';
+      return;
+    }
+    btn.disabled    = false;
+    btn.textContent = `Kirim Nilai ${currentScore} untuk Finalis ${selectedFinalist}`;
+  }
+
+  // ─────────────────────────────────────────────
+  // SUBMIT
+  // ─────────────────────────────────────────────
+  document.getElementById('submit-btn').addEventListener('click', async () => {
+    if (isSubmitting) return;
+
+    // Validate
+    let hasError = false;
+    if (!selectedFinalist) {
+      document.getElementById('finalist-error').classList.add('show');
+      hasError = true;
+    }
+    if (currentScore === null || currentScore < 50 || currentScore > 100) {
+      document.getElementById('score-error').classList.add('show');
+      hasError = true;
+    }
+    if (hasError) return;
+
+    // Double-check local storage
+    if (submittedSet.has(String(selectedFinalist))) {
+      showToast('Finalis ini sudah pernah Anda nilai.', true);
+      return;
+    }
+
+    isSubmitting = true;
+    const btn    = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span> Mengirim...';
+
+    const payload = {
+      judge_id:     judgeId,
+      judge_name:   judgeName,
+      finalist_id:  selectedFinalist,
+      score:        currentScore,
+      notes:        document.getElementById('notes-input').value.trim(),
+      timestamp:    new Date().toISOString(),
+    };
+
+    try {
+      const res = await fetch(APPS_SCRIPT_URL, {
+        method:  'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body:    JSON.stringify(payload),
+      });
+      const data = await res.json();
+
+      if (data.status === 'success') {
+        // Lock locally
+        submittedSet.add(String(selectedFinalist));
+        localStorage.setItem(storageKey, JSON.stringify([...submittedSet]));
+
+        // Update UI
+        buildFinalistGrid();
+        updateProgress();
+        resetForm();
+        showToast(`✓ Nilai Finalis ${selectedFinalist} berhasil dikirim`);
+        checkAllDone();
+
+      } else if (data.status === 'duplicate') {
+        showToast('Nilai untuk finalis ini sudah tercatat di server.', true);
+        submittedSet.add(String(selectedFinalist));
+        localStorage.setItem(storageKey, JSON.stringify([...submittedSet]));
+        buildFinalistGrid();
+        resetForm();
+
+      } else {
+        showToast('Gagal mengirim. Coba lagi.', true);
+        btn.disabled    = false;
+        btn.textContent = `Kirim Nilai ${currentScore} untuk Finalis ${selectedFinalist}`;
+      }
+    } catch (err) {
+      showToast('Koneksi gagal. Periksa internet dan coba lagi.', true);
+      btn.disabled    = false;
+      btn.textContent = `Kirim Nilai ${currentScore} untuk Finalis ${selectedFinalist}`;
+    }
+
+    isSubmitting = false;
+  });
+
+  // ─────────────────────────────────────────────
+  // HELPERS
+  // ─────────────────────────────────────────────
+  function resetForm() {
+    selectedFinalist = null;
+    currentScore     = null;
+    slider.value     = 75;
+    manualInput.value = '';
+    scoreDisp.textContent = '—';
+    scoreDisp.classList.add('empty');
+    document.getElementById('notes-input').value = '';
+    document.getElementById('finalist-hint').textContent = 'Pilih nomor finalis yang sedang tampil';
+    updateSubmitButton();
+  }
+
+  function updateProgress() {
+    const done  = submittedSet.size;
+    const total = TOTAL_FINALISTS;
+    const pct   = (done / total) * 100;
+    document.getElementById('progress-text').textContent = `${done} / ${total} finalis`;
+    document.getElementById('progress-fill').style.width = pct + '%';
+  }
+
+  function checkAllDone() {
+    if (submittedSet.size >= TOTAL_FINALISTS) {
+      document.getElementById('main-form').style.display    = 'none';
+      document.getElementById('submit-btn').style.display   = 'none';
+      document.getElementById('progress-wrap').style.display = 'none';
+      document.getElementById('locked-screen').classList.add('show');
+    }
+  }
+
+  function showToast(msg, isError = false) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className   = 'toast' + (isError ? ' error' : '') + ' show';
+    setTimeout(() => { t.classList.remove('show'); }, 3000);
+  }
+</script>
+</body>
+</html>
