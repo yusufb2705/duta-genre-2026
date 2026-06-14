@@ -688,39 +688,16 @@
     let status = 'unknown';
 
     try {
-      // Timeout 15 detik
-      const controller = new AbortController();
-      const timeoutId  = setTimeout(() => controller.abort(), 15000);
-
-      // Apps Script dari domain lain mengembalikan response 'opaque'
-      // karena CORS — kita tidak bisa baca isi response-nya.
-      // Tapi kalau fetch tidak throw error, artinya request berhasil terkirim
-      // dan diproses server (sudah dikonfirmasi via Execution Log).
-      await fetch(APPS_SCRIPT_URL, {
-        method:  'POST',
-        mode:    'no-cors',
-        headers: { 'Content-Type': 'text/plain' },
-        body:    JSON.stringify(payload),
-        signal:  controller.signal,
-      });
-      clearTimeout(timeoutId);
-
-      // no-cors selalu return response opaque (status 0, body kosong)
-      // tidak bisa dibaca — anggap berhasil kalau tidak throw
-      status = 'success';
-
+      status = await submitViaJsonp(payload);
     } catch (err) {
-      if (err.name === 'AbortError') {
-        // Timeout — kemungkinan data sudah masuk tapi koneksi lambat
+      if (err.message === 'timeout') {
         status = 'timeout';
       } else {
-        // Koneksi benar-benar gagal (offline, dll)
         status = 'error';
       }
     }
 
-    if (status === 'success' || status === 'duplicate' || status === 'timeout') {
-      // Semua kondisi ini artinya data sudah atau kemungkinan sudah masuk
+    if (status === 'success' || status === 'timeout') {
       submittedSet.add(String(finalistToSubmit));
       localStorage.setItem(storageKey, JSON.stringify([...submittedSet]));
       buildFinalistGrid();
@@ -734,6 +711,23 @@
         showToast(`✓ Nilai QnA (${totalQna}/40) Finalis ${finalistToSubmit} berhasil dikirim`);
       }
 
+    } else if (status === 'duplicate') {
+      // Server menolak — finalis ini sudah pernah dinilai juri ini
+      submittedSet.add(String(finalistToSubmit));
+      localStorage.setItem(storageKey, JSON.stringify([...submittedSet]));
+      buildFinalistGrid();
+      updateProgress();
+      resetForm();
+      checkAllDone();
+      showToast(`Finalis ${finalistToSubmit} sudah tercatat sebelumnya di server`, true);
+
+    } else if (status.startsWith('validation_error')) {
+      // Server menolak karena nilai di luar rentang
+      const msg = status.replace('validation_error:', '');
+      showToast(msg || 'Nilai tidak valid', true);
+      btn.disabled    = false;
+      btn.textContent = savedText;
+
     } else {
       // Gagal total — biarkan juri coba lagi
       showToast('Koneksi gagal. Coba lagi.', true);
@@ -743,6 +737,64 @@
 
     isSubmitting = false;
   });
+
+  // ═══════════════════════════════════════════════════════
+  // JSONP HELPER — bypass CORS, baca response asli dari server
+  // ═══════════════════════════════════════════════════════
+
+  function submitViaJsonp(payload) {
+    return new Promise((resolve, reject) => {
+      const callbackName = 'dg2026_cb_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+
+      const params = new URLSearchParams({
+        action:      'submit',
+        judge_id:    payload.judge_id,
+        judge_name:  payload.judge_name,
+        finalist_id: payload.finalist_id,
+        substansi:   payload.substansi,
+        critical:    payload.critical,
+        komunikasi:  payload.komunikasi,
+        keaslian:    payload.keaslian,
+        timestamp:   payload.timestamp,
+        callback:    callbackName,
+      });
+
+      const script = document.createElement('script');
+      script.src   = APPS_SCRIPT_URL + '?' + params.toString();
+
+      // Timeout 15 detik
+      const timeoutId = setTimeout(() => {
+        cleanup();
+        reject(new Error('timeout'));
+      }, 15000);
+
+      function cleanup() {
+        clearTimeout(timeoutId);
+        delete window[callbackName];
+        if (script.parentNode) script.parentNode.removeChild(script);
+      }
+
+      window[callbackName] = (data) => {
+        cleanup();
+        if (data.status === 'success') {
+          resolve('success');
+        } else if (data.status === 'duplicate') {
+          resolve('duplicate');
+        } else if (data.status === 'error') {
+          resolve('validation_error:' + (data.message || 'Nilai tidak valid'));
+        } else {
+          resolve('unknown');
+        }
+      };
+
+      script.onerror = () => {
+        cleanup();
+        reject(new Error('network'));
+      };
+
+      document.head.appendChild(script);
+    });
+  }
 
   // ═══════════════════════════════════════════════════════
   // HELPERS
