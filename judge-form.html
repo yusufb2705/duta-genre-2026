@@ -137,7 +137,86 @@
     }
     .finalist-hint { font-size: 11px; color: var(--muted); margin-top: 8px; }
 
-    /* ── Score input ── */
+    /* ── QnA Indicators ── */
+    .qna-total-wrap {
+      text-align: center;
+      padding-bottom: 16px;
+      margin-bottom: 4px;
+      border-bottom: 1px solid var(--border);
+    }
+    .qna-total-display {
+      font-family: 'Playfair Display', serif;
+      font-size: 56px;
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1;
+      letter-spacing: -1px;
+    }
+    .qna-total-label {
+      font-size: 11px;
+      color: var(--muted);
+      margin-top: 4px;
+    }
+
+    .indicator-block {
+      padding: 16px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .indicator-block:last-of-type { border-bottom: none; padding-bottom: 8px; }
+
+    .indicator-header {
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .indicator-name {
+      flex: 1;
+      font-size: 13px;
+      color: var(--text);
+      font-weight: 500;
+      line-height: 1.3;
+    }
+    .indicator-value {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--gold);
+    }
+    .indicator-max {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .qna-slider {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 4px;
+      border-radius: 2px;
+      background: var(--border);
+      outline: none;
+      cursor: pointer;
+    }
+    .qna-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--gold);
+      cursor: pointer;
+      box-shadow: 0 0 0 4px rgba(201,168,76,0.2);
+    }
+    .qna-slider::-moz-range-thumb {
+      width: 22px; height: 22px;
+      border-radius: 50%;
+      background: var(--gold);
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 0 0 4px rgba(201,168,76,0.2);
+    }
+
+    /* ── Score (legacy, kept for compatibility) ── */
     .score-display {
       font-family: 'Playfair Display', serif;
       font-size: 72px;
@@ -372,25 +451,55 @@
   <div class="divider"></div>
 
   <div class="card-section">
-    <div class="section-label">Nilai</div>
-    <div class="score-display empty" id="score-display">—</div>
-    <div class="score-range">Skala 50 – 100</div>
-    <input type="range" class="score-slider" id="score-slider" min="50" max="100" value="75" />
-    <div class="score-ticks">
-      <span>50</span><span>60</span><span>70</span><span>80</span><span>90</span><span>100</span>
-    </div>
-    <div class="manual-row">
-      <span class="manual-label">Ketik langsung:</span>
-      <input type="number" class="manual-input" id="manual-input" min="50" max="100" placeholder="75" />
-    </div>
-    <div class="field-error" id="score-error">Nilai harus antara 50 dan 100.</div>
-  </div>
+    <div class="section-label">Penilaian QnA</div>
 
-  <div class="divider"></div>
+    <!-- Total display -->
+    <div class="qna-total-wrap">
+      <div class="qna-total-display" id="qna-total-display">0</div>
+      <div class="qna-total-label">dari total 40</div>
+    </div>
 
-  <div class="card-section" style="padding-bottom: 20px;">
-    <div class="section-label">Catatan (Opsional)</div>
-    <textarea class="notes-input" id="notes-input" placeholder="Catatan singkat untuk finalis ini..." maxlength="300"></textarea>
+    <!-- Substansi -->
+    <div class="indicator-block">
+      <div class="indicator-header">
+        <span class="indicator-name">Pemahaman Materi / Substansi</span>
+        <span class="indicator-value" id="val-substansi">0</span>
+        <span class="indicator-max">/ 15</span>
+      </div>
+      <input type="range" class="qna-slider" id="slider-substansi" min="0" max="15" value="0" data-max="15" />
+    </div>
+
+    <!-- Critical Thinking -->
+    <div class="indicator-block">
+      <div class="indicator-header">
+        <span class="indicator-name">Critical Thinking & Problem Solving</span>
+        <span class="indicator-value" id="val-critical">0</span>
+        <span class="indicator-max">/ 10</span>
+      </div>
+      <input type="range" class="qna-slider" id="slider-critical" min="0" max="10" value="0" data-max="10" />
+    </div>
+
+    <!-- Komunikasi -->
+    <div class="indicator-block">
+      <div class="indicator-header">
+        <span class="indicator-name">Komunikasi & Public Speaking</span>
+        <span class="indicator-value" id="val-komunikasi">0</span>
+        <span class="indicator-max">/ 10</span>
+      </div>
+      <input type="range" class="qna-slider" id="slider-komunikasi" min="0" max="10" value="0" data-max="10" />
+    </div>
+
+    <!-- Keaslian -->
+    <div class="indicator-block">
+      <div class="indicator-header">
+        <span class="indicator-name">Keaslian, Ketegasan & Relevansi</span>
+        <span class="indicator-value" id="val-keaslian">0</span>
+        <span class="indicator-max">/ 5</span>
+      </div>
+      <input type="range" class="qna-slider" id="slider-keaslian" min="0" max="5" value="0" data-max="5" />
+    </div>
+
+    <div class="field-error" id="score-error">Semua indikator wajib diisi (boleh 0).</div>
   </div>
 
 </div>
@@ -449,19 +558,13 @@
   // INIT
   // ═══════════════════════════════════════════════════════
 
-  if (!judgeId || !judgeName) {
-    // URL tidak valid — tampilkan warning, sembunyikan form
-    document.getElementById('unknown-warning').classList.add('show');
-    document.getElementById('main-form').style.display    = 'none';
-    document.getElementById('submit-btn').style.display   = 'none';
-    document.getElementById('progress-wrap').style.display = 'none';
-    document.getElementById('judge-name').textContent     = 'Tidak Dikenal';
-  } else {
-    document.getElementById('judge-name').textContent = judgeName;
-    buildFinalistGrid();
-    updateProgress();
-    checkAllDone();
-  }
+  // Kalau tidak ada parameter judge, fallback ke mode testing
+  const displayName = judgeName || (judgeId ? `Juri ${judgeId}` : 'Juri Testing');
+  document.getElementById('judge-name').textContent = displayName;
+  buildFinalistGrid();
+  updateProgress();
+  checkAllDone();
+  updateSubmitButton();
 
   // ═══════════════════════════════════════════════════════
   // FINALIST GRID
@@ -496,38 +599,35 @@
   }
 
   // ═══════════════════════════════════════════════════════
-  // SCORE SYNC
+  // QNA INDICATOR SYNC
   // ═══════════════════════════════════════════════════════
 
-  const slider      = document.getElementById('score-slider');
-  const manualInput = document.getElementById('manual-input');
-  const scoreDisp   = document.getElementById('score-display');
-  let   currentScore = null;
+  const indicators = [
+    { key: 'substansi', sliderId: 'slider-substansi', valueId: 'val-substansi', max: 15 },
+    { key: 'critical',  sliderId: 'slider-critical',  valueId: 'val-critical',  max: 10 },
+    { key: 'komunikasi',sliderId: 'slider-komunikasi',valueId: 'val-komunikasi',max: 10 },
+    { key: 'keaslian',  sliderId: 'slider-keaslian',  valueId: 'val-keaslian',  max: 5  },
+  ];
 
-  slider.addEventListener('input', () => {
-    currentScore          = parseInt(slider.value);
-    manualInput.value     = currentScore;
-    scoreDisp.textContent = currentScore;
-    scoreDisp.classList.remove('empty');
-    document.getElementById('score-error').classList.remove('show');
-    updateSubmitButton();
+  const qnaValues = { substansi: 0, critical: 0, komunikasi: 0, keaslian: 0 };
+
+  indicators.forEach(ind => {
+    const slider = document.getElementById(ind.sliderId);
+    const valueEl = document.getElementById(ind.valueId);
+    slider.addEventListener('input', () => {
+      const v = parseInt(slider.value);
+      qnaValues[ind.key] = v;
+      valueEl.textContent = v;
+      updateQnaTotal();
+      updateSubmitButton();
+    });
   });
 
-  manualInput.addEventListener('input', () => {
-    const v = parseInt(manualInput.value);
-    if (!isNaN(v) && v >= 50 && v <= 100) {
-      currentScore          = v;
-      slider.value          = v;
-      scoreDisp.textContent = v;
-      scoreDisp.classList.remove('empty');
-      document.getElementById('score-error').classList.remove('show');
-    } else {
-      currentScore = null;
-      scoreDisp.textContent = manualInput.value || '—';
-      scoreDisp.classList.add('empty');
-    }
-    updateSubmitButton();
-  });
+  function updateQnaTotal() {
+    const total = qnaValues.substansi + qnaValues.critical + qnaValues.komunikasi + qnaValues.keaslian;
+    document.getElementById('qna-total-display').textContent = total;
+    return total;
+  }
 
   // ═══════════════════════════════════════════════════════
   // SUBMIT BUTTON STATE
@@ -540,13 +640,9 @@
       btn.textContent = 'Pilih finalis untuk menilai';
       return;
     }
-    if (currentScore === null) {
-      btn.disabled    = true;
-      btn.textContent = 'Geser slider untuk memberi nilai';
-      return;
-    }
+    const total = updateQnaTotal();
     btn.disabled    = false;
-    btn.textContent = `Kirim Nilai ${currentScore} untuk Finalis ${selectedFinalist}`;
+    btn.textContent = `Kirim Nilai QnA (${total}/40) untuk Finalis ${selectedFinalist}`;
   }
 
   // ═══════════════════════════════════════════════════════
@@ -560,10 +656,6 @@
       document.getElementById('finalist-error').classList.add('show');
       return;
     }
-    if (currentScore === null || currentScore < 50 || currentScore > 100) {
-      document.getElementById('score-error').classList.add('show');
-      return;
-    }
     if (submittedSet.has(String(selectedFinalist))) {
       showToast('Finalis ini sudah pernah Anda nilai.', true);
       return;
@@ -575,12 +667,17 @@
     btn.disabled      = true;
     btn.innerHTML     = '<span class="spinner"></span> Mengirim...';
 
+    const totalQna = updateQnaTotal();
+
     const payload = {
       judge_id:    judgeId,
       judge_name:  judgeName,
       finalist_id: selectedFinalist,
-      score:       currentScore,
-      notes:       document.getElementById('notes-input').value.trim(),
+      substansi:   qnaValues.substansi,
+      critical:    qnaValues.critical,
+      komunikasi:  qnaValues.komunikasi,
+      keaslian:    qnaValues.keaslian,
+      total_qna:   totalQna,
       timestamp:   new Date().toISOString(),
     };
 
@@ -627,11 +724,11 @@
       checkAllDone();
 
       if (status === 'timeout') {
-        showToast(`✓ Nilai Finalis ${finalistToSubmit} terkirim`);
+        showToast(`✓ Nilai QnA Finalis ${finalistToSubmit} terkirim`);
       } else if (status === 'duplicate') {
         showToast(`Finalis ${finalistToSubmit} sudah tercatat di server`);
       } else {
-        showToast(`✓ Nilai Finalis ${finalistToSubmit} berhasil dikirim`);
+        showToast(`✓ Nilai QnA (${totalQna}/40) Finalis ${finalistToSubmit} berhasil dikirim`);
       }
 
     } else {
@@ -649,13 +746,14 @@
   // ═══════════════════════════════════════════════════════
 
   function resetForm() {
-    selectedFinalist      = null;
-    currentScore          = null;
-    slider.value          = 75;
-    manualInput.value     = '';
-    scoreDisp.textContent = '—';
-    scoreDisp.classList.add('empty');
-    document.getElementById('notes-input').value      = '';
+    selectedFinalist = null;
+    indicators.forEach(ind => {
+      qnaValues[ind.key] = 0;
+      document.getElementById(ind.sliderId).value = 0;
+      document.getElementById(ind.valueId).textContent = '0';
+    });
+    updateQnaTotal();
+    document.querySelectorAll('.finalist-btn').forEach(b => b.classList.remove('selected'));
     document.getElementById('finalist-hint').textContent = 'Pilih nomor finalis yang sedang tampil';
     updateSubmitButton();
   }
@@ -684,4 +782,4 @@
   }
 </script>
 </body>
-</html> 
+</html>
