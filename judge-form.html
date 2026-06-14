@@ -692,24 +692,29 @@
       const controller = new AbortController();
       const timeoutId  = setTimeout(() => controller.abort(), 15000);
 
-      const res = await fetch(APPS_SCRIPT_URL, {
+      // Apps Script dari domain lain mengembalikan response 'opaque'
+      // karena CORS — kita tidak bisa baca isi response-nya.
+      // Tapi kalau fetch tidak throw error, artinya request berhasil terkirim
+      // dan diproses server (sudah dikonfirmasi via Execution Log).
+      await fetch(APPS_SCRIPT_URL, {
         method:  'POST',
+        mode:    'no-cors',
         headers: { 'Content-Type': 'text/plain' },
         body:    JSON.stringify(payload),
         signal:  controller.signal,
       });
       clearTimeout(timeoutId);
 
-      const data = await res.json();
-      status = data.status; // 'success' atau 'duplicate'
+      // no-cors selalu return response opaque (status 0, body kosong)
+      // tidak bisa dibaca — anggap berhasil kalau tidak throw
+      status = 'success';
 
     } catch (err) {
       if (err.name === 'AbortError') {
-        // Timeout — Apps Script lambat tapi data kemungkinan sudah masuk
-        // Anggap sukses, tandai di local
+        // Timeout — kemungkinan data sudah masuk tapi koneksi lambat
         status = 'timeout';
       } else {
-        // Koneksi benar-benar gagal
+        // Koneksi benar-benar gagal (offline, dll)
         status = 'error';
       }
     }
@@ -725,8 +730,6 @@
 
       if (status === 'timeout') {
         showToast(`✓ Nilai QnA Finalis ${finalistToSubmit} terkirim`);
-      } else if (status === 'duplicate') {
-        showToast(`Finalis ${finalistToSubmit} sudah tercatat di server`);
       } else {
         showToast(`✓ Nilai QnA (${totalQna}/40) Finalis ${finalistToSubmit} berhasil dikirim`);
       }
