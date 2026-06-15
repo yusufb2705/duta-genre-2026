@@ -524,6 +524,31 @@
   checkAllDone();
   updateSubmitButton();
 
+  // Sync status dari server — supaya kalau localStorage hilang/reset,
+  // status finalis "sudah dinilai" tetap akurat sesuai data server.
+  if (judgeId) {
+    fetchStatusViaJsonp(judgeId)
+      .then(submittedFromServer => {
+        let changed = false;
+        submittedFromServer.forEach(fId => {
+          if (!submittedSet.has(String(fId))) {
+            submittedSet.add(String(fId));
+            changed = true;
+          }
+        });
+        if (changed) {
+          localStorage.setItem(storageKey, JSON.stringify([...submittedSet]));
+          buildFinalistGrid();
+          updateProgress();
+          checkAllDone();
+        }
+      })
+      .catch(() => {
+        // Gagal sync — tidak masalah, lanjut pakai localStorage yang ada.
+        // Proteksi anti-duplikat tetap aman di server saat submit.
+      });
+  }
+
   // ═══════════════════════════════════════════════════════
   // FINALIST GRID
   // ═══════════════════════════════════════════════════════
@@ -695,6 +720,52 @@
 
     isSubmitting = false;
   });
+
+  // ═══════════════════════════════════════════════════════
+  // STATUS SYNC — JSONP, dipanggil saat form dibuka
+  // ═══════════════════════════════════════════════════════
+
+  function fetchStatusViaJsonp(judgeId) {
+    return new Promise((resolve, reject) => {
+      const callbackName = 'dg2026_status_cb_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+
+      const params = new URLSearchParams({
+        action:   'status',
+        judge_id: judgeId,
+        callback: callbackName,
+      });
+
+      const script = document.createElement('script');
+      script.src   = APPS_SCRIPT_URL + '?' + params.toString();
+
+      const timeoutId = setTimeout(() => {
+        cleanup();
+        reject(new Error('timeout'));
+      }, 10000);
+
+      function cleanup() {
+        clearTimeout(timeoutId);
+        delete window[callbackName];
+        if (script.parentNode) script.parentNode.removeChild(script);
+      }
+
+      window[callbackName] = (data) => {
+        cleanup();
+        if (data.status === 'ok' && Array.isArray(data.submitted)) {
+          resolve(data.submitted);
+        } else {
+          reject(new Error('invalid response'));
+        }
+      };
+
+      script.onerror = () => {
+        cleanup();
+        reject(new Error('network'));
+      };
+
+      document.head.appendChild(script);
+    });
+  }
 
   // ═══════════════════════════════════════════════════════
   // JSONP HELPER — bypass CORS, baca response asli dari server
